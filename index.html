@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Workout Tracker</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: "Work Sans", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9fafb;
+      color: #222;
+      margin: 2em;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1em;
+    }
+
+    #addExerciseForm {
+      max-width: 400px;
+      margin: 0 auto 2em auto;
+      display: flex;
+      gap: 0.5em;
+    }
+
+    #exerciseName {
+      flex-grow: 1;
+      padding: 0.5em 0.75em;
+      font-size: 1.1em;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      transition: border-color 0.2s ease-in-out;
+    }
+    #exerciseName:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+
+    #addExerciseBtn {
+      padding: 0 1em;
+      font-weight: 600;
+      font-size: 1.1em;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.25s ease-in-out;
+    }
+    #addExerciseBtn:hover:not(:disabled) {
+      background-color: #2563eb;
+    }
+    #addExerciseBtn:disabled {
+      background-color: #93c5fd;
+      cursor: not-allowed;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      box-shadow: 0 3px 8px rgb(0 0 0 / 0.1);
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    thead {
+      background-color: #3b82f6;
+      color: white;
+      font-weight: 700;
+    }
+    th, td {
+      padding: 0.75em 1em;
+      text-align: center;
+    }
+    tbody tr:nth-child(odd) {
+      background-color: #f3f4f6;
+    }
+    tbody tr:hover {
+      background-color: #e0e7ff;
+    }
+
+    input[type="number"] {
+      width: 60px;
+      padding: 0.25em 0.4em;
+      font-size: 1em;
+      border: 1.5px solid #ddd;
+      border-radius: 5px;
+      text-align: center;
+      transition: border-color 0.2s ease-in-out;
+    }
+    input[type="number"]:focus {
+      border-color: #3b82f6;
+      outline: none;
+    }
+
+    button.saveBtn {
+      background-color: #10b981;
+      color: white;
+      border: none;
+      padding: 0.35em 0.9em;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
+    }
+    button.saveBtn:hover:not(:disabled) {
+      background-color: #059669;
+    }
+    button.saveBtn:disabled {
+      background-color: #6ee7b7;
+      cursor: not-allowed;
+    }
+
+    .improvement {
+      font-weight: 700;
+    }
+    .improvement.positive {
+      color: #059669;
+    }
+    .improvement.negative {
+      color: #ef4444;
+    }
+    .improvement.neutral {
+      color: #6b7280;
+    }
+
+    #snackbar {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 1em;
+      position: fixed;
+      bottom: 2em;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+      font-weight: 600;
+    }
+    #snackbar.show {
+      visibility: visible;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+    @keyframes fadein {
+      from {bottom: 0; opacity: 0;}
+      to {bottom: 2em; opacity: 1;}
+    }
+    @keyframes fadeout {
+      from {bottom: 2em; opacity: 1;}
+      to {bottom: 0; opacity: 0;}
+    }
+
+    #historyModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 10;
+      justify-content: center;
+      align-items: center;
+    }
+    #historyModal > div {
+      background: white;
+      padding: 2em;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 90%;
+      position: relative;
+    }
+
+    #historyModal button.closeBtn {
+      position: absolute;
+      top: 0.5em;
+      right: 0.5em;
+      font-size: 1.2em;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      thead tr {
+        display: none;
+      }
+      tbody tr {
+        margin-bottom: 1.5em;
+        box-shadow: 0 3px 6px rgb(0 0 0 / 0.1);
+        border-radius: 8px;
+        padding: 1em;
+        background: white;
+      }
+      tbody tr td {
+        padding: 0.5em 1em;
+        text-align: left;
+        position: relative;
+        padding-left: 50%;
+        border: none;
+        border-bottom: 1px solid #eee;
+      }
+      tbody tr td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1em;
+        top: 50%;
+        transform: translateY(-50%);
+        font-weight: 700;
+        color: #555;
+        width: 45%;
+      }
+      tbody tr td:last-child {
+        border: none;
+        text-align: right;
+        padding-right: 1em;
+      }
+      input[type="number"] {
+        width: 100%;
+        box-sizing: border-box;
+      }
+    }
+  </style>
+</head>
+<body>
+  <form id="addExerciseForm" onsubmit="event.preventDefault(); addExercise();">
+    <input id="exerciseName" type="text" placeholder="Enter new exercise name" autocomplete="off" />
+    <button id="addExerciseBtn" disabled>Add</button>
+  </form>
+
+  <table id="workoutTable" aria-label="Workout log table">
+    <thead>
+      <tr>
+        <th>Exercise</th>
+        <th>Sets</th>
+        <th>Reps</th>
+        <th>Weight (kg)</th>
+        <th>Improvement</th>
+        <th>Last Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="snackbar">Saved!</div>
+
+  <div id="historyModal">
+    <div>
+      <button class="closeBtn" onclick="closeModal()">×</button>
+      <canvas id="historyChart" width="500" height="300"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const workoutsKey = 'workouts';
+    let workouts = JSON.parse(localStorage.getItem(workoutsKey)) || [];
+    const exerciseInput = document.getElementById('exerciseName');
+    const addExerciseBtn = document.getElementById('addExerciseBtn');
+
+    exerciseInput.addEventListener('input', () => {
+      addExerciseBtn.disabled = exerciseInput.value.trim() === '';
+    });
+
+    function saveWorkouts() {
+      localStorage.setItem(workoutsKey, JSON.stringify(workouts));
+    }
+
+    function showSnackbar(message = 'Saved!') {
+      const snackbar = document.getElementById('snackbar');
+      snackbar.textContent = message;
+      snackbar.className = 'show';
+      setTimeout(() => snackbar.className = snackbar.className.replace('show', ''), 3000);
+    }
+
+    function formatDate(isoString) {
+      const d = new Date(isoString);
+      return d.toLocaleDateString(undefined, { year: '2-digit', month: 'short', day: 'numeric' });
+    }
+
+    function calculateImprovement(curr, prev) {
+      const weightDiff = curr.weight - prev.weight;
+      const repsDiff = curr.reps - prev.reps;
+      const setsDiff = curr.sets - prev.sets;
+
+      let parts = [];
+      if (weightDiff !== 0)
+        parts.push(`<span class="improvement ${weightDiff > 0 ? 'positive' : 'negative'}">Weight: ${weightDiff > 0 ? '+' : ''}${weightDiff}kg</span>`);
+      if (repsDiff !== 0)
+        parts.push(`<span class="improvement ${repsDiff > 0 ? 'positive' : 'negative'}">Reps: ${repsDiff > 0 ? '+' : ''}${repsDiff}</span>`);
+      if (setsDiff !== 0)
+        parts.push(`<span class="improvement ${setsDiff > 0 ? 'positive' : 'negative'}">Sets: ${setsDiff > 0 ? '+' : ''}${setsDiff}</span>`);
+
+      return parts.length === 0 ? '<span class="improvement neutral">No change</span>' : parts.join(', ');
+    }
+
+    function renderTable() {
+      const tbody = document.querySelector('#workoutTable tbody');
+      tbody.innerHTML = '';
+
+      const grouped = {};
+      workouts.forEach(w => {
+        if (!grouped[w.exercise]) grouped[w.exercise] = [];
+        grouped[w.exercise].push(w);
+      });
+
+      Object.keys(grouped).forEach(exercise => {
+        const records = grouped[exercise].sort((a,b) => new Date(a.date) - new Date(b.date));
+        const last = records[records.length - 1];
+        const prev = records.length > 1 ? records[records.length - 2] : null;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td data-label="Exercise">${exercise}</td>
+          <td data-label="Sets"><input type="number" min="1" id="sets-${exercise}" value="${last.sets}" /></td>
+          <td data-label="Reps"><input type="number" min="1" id="reps-${exercise}" value="${last.reps}" /></td>
+          <td data-label="Weight (kg)"><input type="number" min="0" step="0.5" id="weight-${exercise}" value="${last.weight}" /></td>
+          <td data-label="Improvement">${prev ? calculateImprovement(last, prev) : '<span class="improvement neutral">N/A</span>'}</td>
+          <td data-label="Last Date">${formatDate(last.date)}</td>
+          <td data-label="Action">
+            <button class="saveBtn" onclick="saveEntry('${exercise}')">Save</button>
+            <button class="saveBtn" style="margin-top: 0.5em; background-color: #6366f1;" onclick="viewHistory('${exercise}')">View History</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function addExercise() {
+      const name = exerciseInput.value.trim();
+      if (!name) return;
+      if (workouts.some(w => w.exercise.toLowerCase() === name.toLowerCase())) {
+        alert('Exercise already exists.');
+        return;
+      }
+
+      workouts.push({
+        exercise: name,
+        date: new Date().toISOString(),
+        sets: 3,
+        reps: 10,
+        weight: 0
+      });
+
+      saveWorkouts();
+      renderTable();
+      exerciseInput.value = '';
+      addExerciseBtn.disabled = true;
+      showSnackbar(`Added exercise "${name}"`);
+    }
+
+    function saveEntry(exercise) {
+      const sets = parseInt(document.getElementById(`sets-${exercise}`).value);
+      const reps = parseInt(document.getElementById(`reps-${exercise}`).value);
+      const weight = parseFloat(document.getElementById(`weight-${exercise}`).value);
+
+      if (isNaN(sets) || sets < 1 || isNaN(reps) || reps < 1 || isNaN(weight) || weight < 0) {
+        alert('Please enter valid numbers.');
+        return;
+      }
+
+      workouts.push({
+        exercise,
+        date: new Date().toISOString(),
+        sets,
+        reps,
+        weight
+      });
+
+      saveWorkouts();
+      renderTable();
+      showSnackbar(`Saved "${exercise}"`);
+    }
+
+    let chartInstance;
+    function viewHistory(exerciseName) {
+      const history = workouts
+        .filter(w => w.exercise === exerciseName)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      const labels = history.map(w => formatDate(w.date));
+      const weights = history.map(w => w.weight);
+
+      const ctx = document.getElementById('historyChart').getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: `${exerciseName} Weight (kg)`,
+            data: weights,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59,130,246,0.2)',
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: {
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+      document.getElementById('historyModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('historyModal').style.display = 'none';
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
