@@ -11,7 +11,7 @@
   <style>
     body {
       font-family: "Work Sans", Tahoma, Geneva, Verdana, sans-serif;
-      background: #f9fafb;
+      background: #f4f4f4;
       color: #222;
       margin: 2em;
     }
@@ -30,10 +30,10 @@
 
     #exerciseName {
       flex-grow: 1;
-      padding: 0.5em 0.75em;
-      font-size: 1.1em;
-      border: 2px solid #ddd;
-      border-radius: 6px;
+      padding: 1em 1.5em;
+      font-size: 1em;
+      border: 0px solid #fff;
+      border-radius: 15px;
       transition: border-color 0.2s ease-in-out;
     }
     #exerciseName:focus {
@@ -42,35 +42,40 @@
     }
 
     #addExerciseBtn {
-      padding: 0 1em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 1.7em;
+      margin-left: 0.5em;
       font-weight: 600;
-      font-size: 1.1em;
+      font-size: 1em;
       background-color: #3b82f6;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 30px;
       cursor: pointer;
-      transition: background-color 0.25s ease-in-out;
+      transition: all 0.25s ease-in-out;
+    }
+    #addExerciseBtn svg {
+      stroke: white;
     }
     #addExerciseBtn:hover:not(:disabled) {
       background-color: #2563eb;
     }
     #addExerciseBtn:disabled {
-      background-color: #93c5fd;
+      background-color: #343434;
       cursor: not-allowed;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      box-shadow: 0 3px 8px rgb(0 0 0 / 0.1);
-      background: white;
-      border-radius: 8px;
+      border-radius: 30px;
       overflow: hidden;
     }
     thead {
       background-color: #3b82f6;
-      color: white;
       font-weight: 700;
     }
     th, td {
@@ -78,10 +83,10 @@
       text-align: center;
     }
     tbody tr:nth-child(odd) {
-      background-color: #f3f4f6;
+      background-color: #ffffff;
     }
     tbody tr:hover {
-      background-color: #e0e7ff;
+      background-color: #f2f2f2;
     }
 
     input[type="number"] {
@@ -89,7 +94,7 @@
       padding: 0.25em 0.4em;
       font-size: 1em;
       border: 1.5px solid #ddd;
-      border-radius: 5px;
+      border-radius: 30px;
       text-align: center;
       transition: border-color 0.2s ease-in-out;
     }
@@ -104,7 +109,7 @@
       border: none;
       padding: 0.35em 0.9em;
       font-weight: 600;
-      border-radius: 6px;
+      border-radius: 30px;
       cursor: pointer;
       transition: background-color 0.3s ease-in-out;
     }
@@ -135,7 +140,7 @@
       background-color: #333;
       color: #fff;
       text-align: center;
-      border-radius: 8px;
+      border-radius: 30px;
       padding: 1em;
       position: fixed;
       bottom: 2em;
@@ -169,7 +174,7 @@
     #historyModal > div {
       background: white;
       padding: 2em;
-      border-radius: 8px;
+      border-radius: 30px;
       max-width: 600px;
       width: 90%;
       position: relative;
@@ -194,8 +199,7 @@
       }
       tbody tr {
         margin-bottom: 1.5em;
-        box-shadow: 0 3px 6px rgb(0 0 0 / 0.1);
-        border-radius: 8px;
+        border-radius: 30px;
         padding: 1em;
         background: white;
       }
@@ -232,23 +236,16 @@
 <body>
   <form id="addExerciseForm" onsubmit="event.preventDefault(); addExercise();">
     <input id="exerciseName" type="text" placeholder="Enter new exercise name" autocomplete="off" />
-    <button id="addExerciseBtn" disabled>Add</button>
+    <button id="addExerciseBtn" disabled>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      Add
+    </button>
   </form>
 
-  <table id="workoutTable" aria-label="Workout log table">
-    <thead>
-      <tr>
-        <th>Exercise</th>
-        <th>Sets</th>
-        <th>Reps</th>
-        <th>Weight (kg)</th>
-        <th>Improvement</th>
-        <th>Last Date</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <div id="workoutTable"></div>
 
   <div id="snackbar">Saved!</div>
 
@@ -302,8 +299,8 @@
     }
 
     function renderTable() {
-      const tbody = document.querySelector('#workoutTable tbody');
-      tbody.innerHTML = '';
+      const container = document.getElementById('workoutTable');
+      container.innerHTML = '';
 
       const grouped = {};
       workouts.forEach(w => {
@@ -316,20 +313,39 @@
         const last = records[records.length - 1];
         const prev = records.length > 1 ? records[records.length - 2] : null;
 
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td data-label="Exercise">${exercise}</td>
-          <td data-label="Sets"><input type="number" min="1" id="sets-${exercise}" value="${last.sets}" /></td>
-          <td data-label="Reps"><input type="number" min="1" id="reps-${exercise}" value="${last.reps}" /></td>
-          <td data-label="Weight (kg)"><input type="number" min="0" step="0.5" id="weight-${exercise}" value="${last.weight}" /></td>
-          <td data-label="Improvement">${prev ? calculateImprovement(last, prev) : '<span class="improvement neutral">N/A</span>'}</td>
-          <td data-label="Last Date">${formatDate(last.date)}</td>
-          <td data-label="Action">
-            <button class="saveBtn" onclick="saveEntry('${exercise}')">Save</button>
-            <button class="saveBtn" style="margin-top: 0.5em; background-color: #6366f1;" onclick="viewHistory('${exercise}')">View History</button>
-          </td>
+        const exerciseSection = document.createElement('div');
+        exerciseSection.className = 'exercise-section';
+        exerciseSection.innerHTML = `
+          <table class="exercise-table">
+            <thead>
+              <tr>
+                  <h2 class="exercise-header">${exercise}</h2>
+              </tr>
+              <tr>
+                <th>Sets</th>
+                <th>Reps</th>
+                <th>Weight (kg)</th>
+                <th>Improvement</th>
+                <th>Last Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="Sets"><input type="number" min="1" id="sets-${exercise}" value="${last.sets}" /></td>
+                <td data-label="Reps"><input type="number" min="1" id="reps-${exercise}" value="${last.reps}" /></td>
+                <td data-label="Weight (kg)"><input type="number" min="0" step="0.5" id="weight-${exercise}" value="${last.weight}" /></td>
+                <td data-label="Improvement">${prev ? calculateImprovement(last, prev) : '<span class="improvement neutral">N/A</span>'}</td>
+                <td data-label="Last Date">${formatDate(last.date)}</td>
+                <td data-label="Action">
+                  <button class="saveBtn" onclick="saveEntry('${exercise}')">Save</button>
+                  <button class="saveBtn" style="margin-top: 0.5em; background-color: #6366f1;" onclick="viewHistory('${exercise}')">View History</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         `;
-        tbody.appendChild(tr);
+        container.appendChild(exerciseSection);
       });
     }
 
