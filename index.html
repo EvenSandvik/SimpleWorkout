@@ -723,9 +723,43 @@
       document.getElementById('historyModal').style.display = 'none';
     }
 
+    // User display name functions
+    function checkDisplayName() {
+      const userName = localStorage.getItem('userDisplayName');
+      if (!userName) {
+        document.getElementById('displayNameModal').style.display = 'flex';
+      } else {
+        updateWelcomeMessage(userName);
+      }
+    }
+
+    function saveDisplayName() {
+      const nameInput = document.getElementById('userDisplayName');
+      const name = nameInput.value.trim();
+      
+      if (name) {
+        localStorage.setItem('userDisplayName', name);
+        document.getElementById('displayNameModal').style.display = 'none';
+        updateWelcomeMessage(name);
+      } else {
+        nameInput.setCustomValidity('Please enter your name');
+        nameInput.reportValidity();
+      }
+    }
+
+    function updateWelcomeMessage(name) {
+      const welcomeElement = document.getElementById('welcomeMessage');
+      if (welcomeElement) {
+        welcomeElement.textContent = `Welcome back, ${name}!`;
+      }
+    }
+
     // Initialize the app
-    renderTable();
-    setupNavigation();
+    document.addEventListener('DOMContentLoaded', function() {
+      checkDisplayName();
+      renderTable();
+      setupNavigation();
+    });
     
     // Setup event listeners when DOM is loaded
     document.addEventListener('DOMContentLoaded', () => {
@@ -1178,5 +1212,65 @@
       
     }
   </script>
+  <!-- Display Name Modal -->
+  <div id="displayNameModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h2>Welcome to Workout Tracker! 👋</h2>
+      <p>Please enter your name to personalize your experience.</p>
+      <div style="margin: 1.5rem 0;">
+        <input type="text" id="userDisplayName" placeholder="Your name" class="modal-input" autofocus />
+      </div>
+      <button onclick="saveDisplayName()" class="btn-primary">Save</button>
+    </div>
+  </div>
+
+  <style>
+    .modal {
+      display: flex;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal h2 {
+      margin-top: 0;
+      color: var(--text-primary);
+    }
+
+    .modal p {
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .modal-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(64, 223, 100, 0.2);
+    }
+  </style>
 </body>
 </html>
