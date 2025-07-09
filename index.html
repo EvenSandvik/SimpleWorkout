@@ -38,7 +38,7 @@
     }
     #exerciseName:focus {
       outline: none;
-      border-color: #3b82f6;
+      border-color: #343434;
     }
 
     #addExerciseBtn {
@@ -50,7 +50,7 @@
       margin-left: 0.5em;
       font-weight: 600;
       font-size: 1em;
-      background-color: #3b82f6;
+      background-color: #343434;
       color: white;
       border: none;
       border-radius: 30px;
@@ -67,6 +67,20 @@
       background-color: #343434;
       cursor: not-allowed;
     }
+    
+    .exercise-header {
+      background-color: #343434;
+      color: white;
+      border-radius: 0 0 10px 10px;
+      width: fit-content;
+      padding: 0.5em 1em;
+      margin-bottom: 1em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 1em;
+      font-weight: normal;
+    }
 
     table {
       width: 100%;
@@ -75,7 +89,7 @@
       overflow: hidden;
     }
     thead {
-      background-color: #3b82f6;
+      background-color: #343434;
       font-weight: 700;
     }
     th, td {
@@ -86,11 +100,11 @@
       background-color: #ffffff;
     }
     tbody tr:hover {
-      background-color: #f2f2f2;
+      
     }
 
     input[type="number"] {
-      width: 60px;
+      width: 20px;
       padding: 0.25em 0.4em;
       font-size: 1em;
       border: 1.5px solid #ddd;
@@ -99,12 +113,12 @@
       transition: border-color 0.2s ease-in-out;
     }
     input[type="number"]:focus {
-      border-color: #3b82f6;
+      border-color: #343434;
       outline: none;
     }
 
     button.saveBtn {
-      background-color: #10b981;
+      background-color: #40df64;
       color: white;
       border: none;
       padding: 0.35em 0.9em;
@@ -114,7 +128,7 @@
       transition: background-color 0.3s ease-in-out;
     }
     button.saveBtn:hover:not(:disabled) {
-      background-color: #059669;
+      background-color: #50df64;
     }
     button.saveBtn:disabled {
       background-color: #6ee7b7;
@@ -173,8 +187,9 @@
     }
     #historyModal > div {
       background: white;
-      padding: 2em;
-      border-radius: 30px;
+      padding: 1.5em;
+      border-radius: 10px;
+      margin: 1em;
       max-width: 600px;
       width: 90%;
       position: relative;
@@ -197,6 +212,184 @@
       thead tr {
         display: none;
       }
+      #workoutTable {
+      margin-bottom: 70px; /* Add space for the navigation */
+    }
+
+    /* Navigation Styles */
+    .nav-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      background: #343434;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      padding: 10px 0;
+      margin: 1rem 2rem;
+      z-index: 100;
+      border-radius: 999px;
+    }
+
+    .nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      color: white;
+      padding: 8px 0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin: 0 1rem;
+    }
+
+    .nav-btn svg {
+      margin-bottom: 4px;
+      stroke: currentColor;
+    }
+
+    .nav-btn span {
+      font-size: 0.8em;
+      font-weight: 500;
+    }
+
+    .nav-btn.active {
+      background: #40df64;
+      border-radius: 999px;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* Progress Page Styles */
+    .progress-container {
+      padding: 1.5em;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .time-range-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 2em;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .time-range-btn {
+      padding: 0.5em 1em;
+      border: 1px solid #e5e7eb;
+      background: white;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: all 0.2s ease;
+    }
+    
+    .time-range-btn.active {
+      background: #3b82f6;
+      color: white;
+      border-color: #343434;
+    }
+    
+    .chart-section {
+      background: white;
+      border-radius: 15px;
+      padding: 1.5em;
+      margin-bottom: 2em;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .chart-section h3 {
+      margin-top: 0;
+      margin-bottom: 1.5em;
+      color: #1f2937;
+      font-size: 1.2em;
+    }
+    
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 300px;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5em;
+      margin-bottom: 2em;
+    }
+    
+    .stats-card {
+      background: white;
+      border-radius: 15px;
+      padding: 1.5em;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .stats-card h3 {
+      margin-top: 0;
+      margin-bottom: 1em;
+      color: #1f2937;
+      font-size: 1.1em;
+    }
+    
+    .exercise-section {
+      margin-bottom: 2em;
+      background: white;
+      border-radius: 30px;
+      padding: 0 1.5em 1.5em 1.5em;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .exercise-selector {
+      margin-bottom: 1.5em;
+    }
+    
+    .exercise-dropdown {
+      width: 100%;
+      padding: 0.75em 1em;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 1em;
+      background: white;
+    }
+
+    .progress-container h2 {
+      color: #1f2937;
+      margin-bottom: 1.5em;
+      text-align: center;
+    }
+
+    #progressChartContainer {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      margin-bottom: 2em;
+      background: white;
+      border-radius: 15px;
+      padding: 1.5em;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    @media (max-width: 768px) {
+      .progress-container {
+        padding: 1em;
+      }
+      
+      #progressChartContainer {
+        height: 300px;
+        padding: 1em;
+      }
+    }
       tbody tr {
         margin-bottom: 1.5em;
         border-radius: 30px;
@@ -245,7 +438,68 @@
     </button>
   </form>
 
-  <div id="workoutTable"></div>
+  <!-- Pages Container -->
+  <div id="pages">
+    <!-- Tracker Page (default active) -->
+    <div id="tracker-page" class="page active">
+      <div id="workoutTable"></div>
+    </div>
+    
+    <!-- Progress Page -->
+    <div id="progress-page" class="page">
+      <div class="progress-container">
+        <h2>Workout Progress</h2>
+        
+        <!-- Time Range Selector -->
+        <div class="time-range-selector">
+          <button class="time-range-btn active" data-range="7">Week</button>
+          <button class="time-range-btn" data-range="30">Month</button>
+          <button class="time-range-btn" data-range="90">3 Months</button>
+          <button class="time-range-btn" data-range="365">Year</button>
+          <button class="time-range-btn" data-range="all">All Time</button>
+        </div>
+        
+        <!-- Volume Progress -->
+        <div class="chart-section">
+          <h3>Volume Over Time</h3>
+          <div class="chart-container">
+            <canvas id="volumeChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="stats-grid">
+          <!-- Exercise Selector -->
+          <div class="exercise-selector">
+            <h3>Exercise</h3>
+            <select id="exerciseSelect" class="exercise-dropdown">
+              <option value="all">All Exercises</option>
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+          
+          <!-- Personal Bests -->
+          <div class="stats-card">
+            <h3>🏆 Personal Bests</h3>
+            <div id="personalBests"></div>
+          </div>
+          
+          <!-- Recent Progress -->
+          <div class="stats-card">
+            <h3>📈 Recent Progress</h3>
+            <div id="recentProgress"></div>
+          </div>
+        </div>
+        
+        <!-- Exercise-Specific Chart -->
+        <div class="chart-section">
+          <h3>Exercise Performance</h3>
+          <div class="chart-container">
+            <canvas id="exerciseChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div id="snackbar">Saved!</div>
 
@@ -254,6 +508,24 @@
       <button class="closeBtn" onclick="closeModal()">×</button>
       <canvas id="historyChart" width="500" height="300"></canvas>
     </div>
+  </div>
+
+  <!-- Floating Navigation -->
+  <div class="nav-container">
+    <button class="nav-btn active" data-page="tracker">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+        <polyline points="3.29 7 12 12 20.73 7"></polyline>
+        <line x1="12" y1="22" x2="12" y2="12"></line>
+      </svg>
+      <span>Tracker</span>
+    </button>
+    <button class="nav-btn" data-page="progress">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+      </svg>
+      <span>Progress</span>
+    </button>
   </div>
 
   <script>
@@ -324,17 +596,15 @@
           <table class="exercise-table">
             <thead>
               <tr>
-                  <h2 class="exercise-header">${formattedExercise}</h2>
-              </tr>
-              <tr>
                 <th>Sets</th>
                 <th>Reps</th>
                 <th>Weight (kg)</th>
                 <th>Improvement</th>
                 <th>Last Date</th>
-                <th>Action</th>
+                <th></th>
               </tr>
             </thead>
+            <h2 class="exercise-header">${formattedExercise}</h2>
             <tbody>
               <tr>
                 <td data-label="Sets"><input type="number" min="1" id="sets-${exercise}" value="${last.sets}" /></td>
@@ -342,9 +612,9 @@
                 <td data-label="Weight (kg)"><input type="number" min="0" step="0.5" id="weight-${exercise}" value="${last.weight}" /></td>
                 <td data-label="Improvement">${prev ? calculateImprovement(last, prev) : '<span class="improvement neutral">N/A</span>'}</td>
                 <td data-label="Last Date">${formatDate(last.date)}</td>
-                <td data-label="Action">
-                  <button class="saveBtn" onclick="saveEntry('${exercise}')">Save</button>
-                  <button class="saveBtn" style="margin-top: 0.5em; background-color: #6366f1;" onclick="viewHistory('${exercise}')">View History</button>
+                <td data-label="" style="display: flex; flex-direction: row; gap: 0.7em; width: 100%;">
+                  <button class="saveBtn" onclick="saveEntry('${exercise}')" style="margin-top: 0.5em; padding: 0.5em 1em;">Save</button>
+                  <button class="saveBtn" style="margin-top: 0.5em; background-color: #343434;" onclick="viewHistory('${exercise}')">View History</button>
                 </td>
               </tr>
             </tbody>
@@ -419,8 +689,8 @@
           datasets: [{
             label: `${exerciseName} Weight (kg)`,
             data: weights,
-            borderColor: '#3b82f6',
-            backgroundColor: 'rgba(59,130,246,0.2)',
+            borderColor: '#40df64',
+            backgroundColor: 'rgba(64,223,100,0.2)',
             tension: 0.3,
             fill: true
           }]
@@ -437,7 +707,460 @@
       document.getElementById('historyModal').style.display = 'none';
     }
 
+    // Initialize the app
     renderTable();
+    setupNavigation();
+    
+    // Setup event listeners when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      // Time range buttons
+      document.querySelectorAll('.time-range-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.time-range-btn').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          selectedTimeRange = this.dataset.range;
+          updateProgressPage();
+        });
+      });
+      
+      // Exercise selector
+      const exerciseSelect = document.getElementById('exerciseSelect');
+      if (exerciseSelect) {
+        exerciseSelect.addEventListener('change', function() {
+          selectedExercise = this.value;
+          updateProgressPage();
+        });
+      }
+      
+      // Update progress page when switching to it
+      document.querySelector('[data-page="progress"]').addEventListener('click', () => {
+        setTimeout(updateProgressPage, 100);
+      });
+    });
+    
+    function setupNavigation() {
+      const navButtons = document.querySelectorAll('.nav-btn');
+      const pages = document.querySelectorAll('.page');
+      
+      navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const targetPage = button.getAttribute('data-page');
+          
+          // Update active button
+          navButtons.forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+          
+          // Show target page
+          pages.forEach(page => page.classList.remove('active'));
+          const targetPageElement = document.getElementById(`${targetPage}-page`);
+          if (targetPageElement) {
+            targetPageElement.classList.add('active');
+          }
+          
+          // If progress page is selected, update the chart
+          if (targetPage === 'progress') {
+            setTimeout(updateProgressPage, 100);
+          }
+        });
+      });
+    }
+    
+    // Global chart instances
+    let volumeChart, exerciseChart;
+    let selectedExercise = 'all';
+    let selectedTimeRange = '30'; // Default to 30 days
+    
+    function updateProgressPage() {
+      try {
+        updateExerciseSelector();
+        renderVolumeChart();
+        renderExerciseChart();
+        updatePersonalBests();
+        updateRecentProgress();
+      } catch (error) {
+        console.error('Error updating progress page:', error);
+      }
+    }
+    
+    function updateExerciseSelector() {
+      const select = document.getElementById('exerciseSelect');
+      const exercises = new Set(workouts.map(w => w.exercise).sort());
+      
+      // Save current selection
+      const currentSelection = select.value;
+      
+      // Clear and repopulate
+      select.innerHTML = '<option value="all">All Exercises</option>';
+      
+      exercises.forEach(exercise => {
+        const option = document.createElement('option');
+        option.value = exercise;
+        option.textContent = formatExerciseName(exercise);
+        select.appendChild(option);
+      });
+      
+      // Restore selection if it still exists
+      if (currentSelection && Array.from(select.options).some(opt => opt.value === currentSelection)) {
+        select.value = currentSelection;
+      } else {
+        select.value = 'all';
+      }
+      
+      selectedExercise = select.value;
+    }
+    
+    function renderVolumeChart() {
+      const ctx = document.getElementById('volumeChart').getContext('2d');
+      const timeRange = getTimeRange();
+      
+      // Filter and process data
+      const exerciseData = processExerciseData(timeRange);
+      
+      // Prepare chart data
+      const datasets = [];
+      const colors = [
+        '#40df64', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
+        '#ec4899', '#14b8a6', '#f97316', '#6366f1', '#d946ef'
+      ];
+      
+      Object.entries(exerciseData).forEach(([exercise, data], index) => {
+        if (selectedExercise !== 'all' && exercise !== selectedExercise) return;
+        
+        datasets.push({
+          label: formatExerciseName(exercise),
+          data: data.map(entry => ({
+            x: entry.date,
+            y: entry.volume
+          })),
+          borderColor: colors[index % colors.length],
+          backgroundColor: colors[index % colors.length] + '20',
+          borderWidth: 2,
+          tension: 0.3,
+          fill: true
+        });
+      });
+      
+      // Create or update chart
+      if (window.volumeChart) {
+        window.volumeChart.data.datasets = datasets;
+        window.volumeChart.update();
+      } else {
+        window.volumeChart = new Chart(ctx, {
+          type: 'line',
+          data: { datasets },
+          options: getChartOptions('Volume (kg)')
+        });
+      }
+    }
+    
+    function renderExerciseChart() {
+      if (selectedExercise === 'all') return;
+      
+      const ctx = document.getElementById('exerciseChart').getContext('2d');
+      const timeRange = getTimeRange();
+      const exerciseData = processExerciseData(timeRange)[selectedExercise] || [];
+      
+      if (exerciseData.length === 0) return;
+      
+      const labels = ['Weight', 'Volume', 'Sets', 'Reps'];
+      const latest = exerciseData[exerciseData.length - 1];
+      const previous = exerciseData.length > 1 ? exerciseData[exerciseData.length - 2] : null;
+      
+      const data = {
+        labels,
+        datasets: [
+          {
+            label: 'Latest',
+            data: [
+              latest.weight,
+              latest.volume,
+              latest.sets,
+              latest.reps
+            ],
+            backgroundColor: 'rgba(59, 130, 246, 0.7)'
+          }
+        ]
+      };
+      
+      if (previous) {
+        data.datasets.push({
+          label: 'Previous',
+          data: [
+            previous.weight,
+            previous.volume,
+            previous.sets,
+            previous.reps
+          ],
+          backgroundColor: 'rgba(156, 163, 175, 0.7)'
+        });
+      }
+      
+      if (window.exerciseChart) {
+        window.exerciseChart.data = data;
+        window.exerciseChart.update();
+      } else {
+        window.exerciseChart = new Chart(ctx, {
+          type: 'bar',
+          data: data,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: { beginAtZero: true }
+            },
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Exercise Metrics'
+              }
+            }
+          }
+        });
+      }
+    }
+    
+    function updatePersonalBests() {
+      const container = document.getElementById('personalBests');
+      if (!container) return;
+      
+      const exercise = selectedExercise === 'all' ? null : selectedExercise;
+      const exerciseData = processExerciseData('all', exercise);
+      
+      if (Object.keys(exerciseData).length === 0) {
+        container.innerHTML = '<p>No data available</p>';
+        return;
+      }
+      
+      let html = '';
+      
+      Object.entries(exerciseData).forEach(([ex, data]) => {
+        if (data.length === 0) return;
+        
+        const maxVolume = Math.max(...data.map(d => d.volume));
+        const maxWeight = Math.max(...data.map(d => d.weight));
+        const maxVolumeEntry = data.find(d => d.volume === maxVolume);
+        const maxWeightEntry = data.find(d => d.weight === maxWeight);
+        
+        html += `
+          <div class="pb-entry">
+            <strong>${formatExerciseName(ex)}</strong>
+            <div>🏋️ Max Volume: ${maxVolume} kg (${maxVolumeEntry.sets}×${maxVolumeEntry.reps})</div>
+            <div>💪 Max Weight: ${maxWeight} kg (${maxWeightEntry.sets}×${maxWeightEntry.reps})</div>
+          </div>
+          <hr style="margin: 0.5em 0; border: 0; border-top: 1px solid #eee;">
+        `;
+      });
+      
+      container.innerHTML = html || '<p>No personal bests yet</p>';
+    }
+    
+    function updateRecentProgress() {
+      const container = document.getElementById('recentProgress');
+      if (!container) return;
+      
+      const exercise = selectedExercise === 'all' ? null : selectedExercise;
+      const exerciseData = processExerciseData('30', exercise); // Last 30 days
+      
+      if (Object.keys(exerciseData).length === 0) {
+        container.innerHTML = '<p>No recent data</p>';
+        return;
+      }
+      
+      let html = '';
+      
+      Object.entries(exerciseData).forEach(([ex, data]) => {
+        if (data.length < 2) return;
+        
+        const first = data[0];
+        const last = data[data.length - 1];
+        const volumeChange = ((last.volume - first.volume) / first.volume * 100).toFixed(1);
+        const weightChange = ((last.weight - first.weight) / first.weight * 100).toFixed(1);
+        
+        html += `
+          <div class="progress-entry">
+            <strong>${formatExerciseName(ex)}</strong>
+            <div>📈 Volume: ${volumeChange >= 0 ? '+' : ''}${volumeChange}%</div>
+            <div>⚖️ Weight: ${weightChange >= 0 ? '+' : ''}${weightChange}%</div>
+          </div>
+          <hr style="margin: 0.5em 0; border: 0; border-top: 1px solid #eee;">
+        `;
+      });
+      
+      container.innerHTML = html || '<p>No progress data available</p>';
+    }
+    
+    // Helper functions
+    function processExerciseData(timeRange = '30', specificExercise = null) {
+      const now = new Date();
+      let cutoffDate = new Date();
+      
+      if (timeRange !== 'all') {
+        cutoffDate.setDate(now.getDate() - parseInt(timeRange));
+      } else {
+        cutoffDate = new Date(0); // Beginning of time
+      }
+      
+      const exerciseData = {};
+      
+      workouts.forEach(workout => {
+        // Filter by exercise if specified
+        if (specificExercise && workout.exercise !== specificExercise) return;
+        
+        const workoutDate = new Date(workout.date);
+        if (workoutDate < cutoffDate) return;
+        
+        if (!exerciseData[workout.exercise]) {
+          exerciseData[workout.exercise] = [];
+        }
+        
+        exerciseData[workout.exercise].push({
+          date: workoutDate,
+          weight: workout.weight,
+          sets: workout.sets,
+          reps: workout.reps,
+          volume: workout.weight * workout.sets * workout.reps
+        });
+      });
+      
+      // Sort each exercise's data by date
+      Object.values(exerciseData).forEach(data => {
+        data.sort((a, b) => a.date - b.date);
+      });
+      
+      return exerciseData;
+    }
+    
+    function getTimeRange() {
+      return selectedTimeRange;
+    }
+    
+    function getChartOptions(yAxisLabel) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            type: 'time',
+            time: {
+              unit: selectedTimeRange === '7' ? 'day' : 'week',
+              tooltipFormat: 'MMM d, yyyy',
+              displayFormats: {
+                day: 'MMM d',
+                week: 'MMM d',
+                month: 'MMM yyyy'
+              }
+            },
+            title: { display: true, text: 'Date' }
+          },
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: yAxisLabel }
+          }
+        },
+        interaction: { intersect: false, mode: 'index' },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const data = context.raw;
+                return [
+                  `Weight: ${data.y} kg`,
+                  `Sets: ${data.sets || 'N/A'}`,
+                  `Reps: ${data.reps || 'N/A'}`,
+                  `Volume: ${(data.sets * data.reps * data.y).toFixed(1)} kg`
+                ];
+              }
+            }
+          }
+        }
+      };
+    }
+      
+      workouts.forEach(workout => {
+        if (!exerciseData[workout.exercise]) {
+          exerciseData[workout.exercise] = [];
+        }
+        exerciseData[workout.exercise].push({
+          date: new Date(workout.date),
+          weight: workout.weight,
+          sets: workout.sets,
+          reps: workout.reps,
+          volume: workout.weight * workout.sets * workout.reps
+        });
+      });
+      
+      // Sort each exercise's data by date
+      Object.keys(exerciseData).forEach(exercise => {
+        exerciseData[exercise].sort((a, b) => a.date - b.date);
+      });
+      
+      // Prepare chart data
+      const datasets = [];
+      const colors = [
+        '#40df64', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
+        '#ec4899', '#14b8a6', '#f97316', '#6366f1', '#d946ef'
+      ];
+      
+      Object.keys(exerciseData).forEach((exercise, index) => {
+        const data = exerciseData[exercise];
+        const color = colors[index % colors.length];
+        
+        datasets.push({
+          label: exercise,
+          data: data.map(entry => ({
+            x: entry.date,
+            y: entry.volume
+          })),
+          borderColor: color,
+          backgroundColor: color + '20',
+          borderWidth: 2,
+          tension: 0.3,
+          fill: true
+        });
+      });
+      
+      // Create or update chart
+      if (window.progressChart) {
+        window.progressChart.data.datasets = datasets;
+        window.progressChart.update();
+      } else {
+        window.progressChart = new Chart(ctx, {
+          type: 'line',
+          data: { datasets },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                type: 'time',
+                time: {
+                  unit: 'day',
+                  tooltipFormat: 'MMM d, yyyy'
+                },
+                title: {
+                  display: true,
+                  text: 'Date'
+                }
+              },
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Volume (kg)'
+                }
+              }
+            },
+            interaction: {
+              intersect: false,
+              mode: 'index'
+            }
+          }
+        });
+      
+    }
   </script>
 </body>
 </html>
