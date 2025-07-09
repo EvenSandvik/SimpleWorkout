@@ -298,6 +298,10 @@
       return parts.length === 0 ? '<span class="improvement neutral">No change</span>' : parts.join(', ');
     }
 
+    function formatExerciseName(name) {
+      return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+    }
+
     function renderTable() {
       const container = document.getElementById('workoutTable');
       container.innerHTML = '';
@@ -309,6 +313,7 @@
       });
 
       Object.keys(grouped).forEach(exercise => {
+        const formattedExercise = formatExerciseName(exercise);
         const records = grouped[exercise].sort((a,b) => new Date(a.date) - new Date(b.date));
         const last = records[records.length - 1];
         const prev = records.length > 1 ? records[records.length - 2] : null;
@@ -319,7 +324,7 @@
           <table class="exercise-table">
             <thead>
               <tr>
-                  <h2 class="exercise-header">${exercise}</h2>
+                  <h2 class="exercise-header">${formattedExercise}</h2>
               </tr>
               <tr>
                 <th>Sets</th>
