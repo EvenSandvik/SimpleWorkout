@@ -31,7 +31,7 @@
     #exerciseName {
       flex-grow: 1;
       padding: 1em 1.5em;
-      font-size: 1em;
+      font-size: 0.84em;
       border: 0px solid #fff;
       border-radius: 15px;
       transition: border-color 0.2s ease-in-out;
@@ -429,7 +429,7 @@
 <body>
 <h2 style="color: #343434; font-size: 1.8em;"><span id="displayName"></span></h2>
   <form id="addExerciseForm" onsubmit="event.preventDefault(); addExercise();">
-    <input id="exerciseName" type="text" placeholder="Enter new exercise name" autocomplete="off" />
+    <input id="exerciseName" type="text" placeholder="New exercise" autocomplete="off" />
     <button id="addExerciseBtn" disabled>
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -616,11 +616,11 @@
                 <td data-label="Improvement">${prev ? calculateImprovement(last, prev) : '<span class="improvement neutral">N/A</span>'}</td>
                 <td data-label="Last Date">${formatDate(last.date)}</td>
                 <td data-label="" style="display: flex; flex-direction: row; gap: 0.7em; width: 100%;">
-                  <button class="saveBtn" onclick="saveEntry('${exercise}')" style="margin-top: 0.5em; padding: 0.5em 1em; display: flex; align-items: center; gap: 5px;">
+                  <button class="saveBtn" style="margin-top: 0.5em; padding: 0.5em 1em; display: flex; align-items: center; gap: 5px;" onclick="saveEntry('${exercise}')">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
                       <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                      <polyline points="7 3v5h8"></polyline>
+                      <polyline points="7 3 7 8 15 8"></polyline>
                     </svg>
                     Save
                   </button>
@@ -760,6 +760,25 @@
       checkDisplayName();
       renderTable();
       setupNavigation();
+      
+      // Add event listeners for time range buttons
+      document.querySelectorAll('.time-range-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          document.querySelectorAll('.time-range-btn').forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+          selectedTimeRange = this.getAttribute('data-range');
+          updateProgressPage();
+        });
+      });
+      
+      // Add event listener for exercise selector
+      const exerciseSelect = document.getElementById('exerciseSelect');
+      if (exerciseSelect) {
+        exerciseSelect.addEventListener('change', function() {
+          selectedExercise = this.value;
+          updateProgressPage();
+        });
+      }
     });
     
     // Setup event listeners when DOM is loaded
@@ -823,6 +842,12 @@
     
     function updateProgressPage() {
       try {
+        // Make sure we're on the progress page
+        const progressPage = document.getElementById('progress-page');
+        if (!progressPage || !progressPage.classList.contains('active')) {
+          return;
+        }
+        
         updateExerciseSelector();
         renderVolumeChart();
         renderExerciseChart();
@@ -835,6 +860,14 @@
     
     function updateExerciseSelector() {
       const select = document.getElementById('exerciseSelect');
+      if (!select) return;
+      
+      // Make sure workouts is defined and is an array
+      if (!Array.isArray(workouts) || workouts.length === 0) {
+        select.innerHTML = '<option value="all">No exercises found</option>';
+        return;
+      }
+      
       const exercises = new Set(workouts.map(w => w.exercise).sort());
       
       // Save current selection
@@ -844,10 +877,12 @@
       select.innerHTML = '<option value="all">All Exercises</option>';
       
       exercises.forEach(exercise => {
-        const option = document.createElement('option');
-        option.value = exercise;
-        option.textContent = formatExerciseName(exercise);
-        select.appendChild(option);
+        if (exercise) { // Make sure exercise is not undefined
+          const option = document.createElement('option');
+          option.value = exercise;
+          option.textContent = formatExerciseName(exercise);
+          select.appendChild(option);
+        }
       });
       
       // Restore selection if it still exists
@@ -861,11 +896,18 @@
     }
     
     function renderVolumeChart() {
-      const ctx = document.getElementById('volumeChart').getContext('2d');
+      const canvas = document.getElementById('volumeChart');
+      if (!canvas) return;
+      
+      // Clear any existing chart
+      if (window.volumeChart && typeof window.volumeChart.destroy === 'function') {
+        window.volumeChart.destroy();
+      }
+      
       const timeRange = getTimeRange();
       
       // Filter and process data
-      const exerciseData = processExerciseData(timeRange);
+      const exerciseData = processExerciseData(timeRange, selectedExercise === 'all' ? null : selectedExercise);
       
       // Prepare chart data
       const datasets = [];
@@ -877,9 +919,12 @@
       Object.entries(exerciseData).forEach(([exercise, data], index) => {
         if (selectedExercise !== 'all' && exercise !== selectedExercise) return;
         
+        // Sort data by date
+        const sortedData = [...data].sort((a, b) => a.date - b.date);
+        
         datasets.push({
           label: formatExerciseName(exercise),
-          data: data.map(entry => ({
+          data: sortedData.map(entry => ({
             x: entry.date,
             y: entry.volume
           })),
@@ -891,86 +936,147 @@
         });
       });
       
-      // Create or update chart
-      if (window.volumeChart) {
-        window.volumeChart.data.datasets = datasets;
-        window.volumeChart.update();
+      // Create chart if we have data
+      if (datasets.length > 0) {
+        try {
+          window.volumeChart = new Chart(canvas, {
+            type: 'line',
+            data: { datasets },
+            options: getChartOptions('Volume (kg)')
+          });
+        } catch (error) {
+          console.error('Error creating volume chart:', error);
+          canvas.parentElement.innerHTML = '<p>Error displaying chart. Please try again.</p>';
+        }
       } else {
-        window.volumeChart = new Chart(ctx, {
-          type: 'line',
-          data: { datasets },
-          options: getChartOptions('Volume (kg)')
-        });
+        // Show message when no data is available
+        canvas.parentElement.innerHTML = '<p>No data available for the selected time range and exercise.</p>';
       }
     }
     
     function renderExerciseChart() {
-      if (selectedExercise === 'all') return;
+      const canvas = document.getElementById('exerciseChart');
+      if (!canvas) return;
       
-      const ctx = document.getElementById('exerciseChart').getContext('2d');
       const timeRange = getTimeRange();
-      const exerciseData = processExerciseData(timeRange)[selectedExercise] || [];
       
-      if (exerciseData.length === 0) return;
+      // Filter and process data
+      const exerciseData = processExerciseData(timeRange, selectedExercise === 'all' ? null : selectedExercise);
       
-      const labels = ['Weight', 'Volume', 'Sets', 'Reps'];
-      const latest = exerciseData[exerciseData.length - 1];
-      const previous = exerciseData.length > 1 ? exerciseData[exerciseData.length - 2] : null;
-      
-      const data = {
-        labels,
-        datasets: [
-          {
-            label: 'Latest',
-            data: [
-              latest.weight,
-              latest.volume,
-              latest.sets,
-              latest.reps
-            ],
-            backgroundColor: 'rgba(59, 130, 246, 0.7)'
-          }
-        ]
-      };
-      
-      if (previous) {
-        data.datasets.push({
-          label: 'Previous',
-          data: [
-            previous.weight,
-            previous.volume,
-            previous.sets,
-            previous.reps
-          ],
-          backgroundColor: 'rgba(156, 163, 175, 0.7)'
-        });
+      // Clear previous chart if it exists
+      if (window.exerciseChart) {
+        window.exerciseChart.destroy();
       }
       
-      if (window.exerciseChart) {
-        window.exerciseChart.data = data;
-        window.exerciseChart.update();
-      } else {
-        window.exerciseChart = new Chart(ctx, {
-          type: 'bar',
-          data: data,
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: { beginAtZero: true }
+      if (Object.keys(exerciseData).length === 0) {
+        canvas.parentElement.innerHTML = '<p>No exercise data available for the selected time range.</p>';
+        return;
+      }
+      
+      // Get data for the selected exercise or first available exercise
+      const exercise = selectedExercise === 'all' ? Object.keys(exerciseData)[0] : selectedExercise;
+      const data = exerciseData[exercise] || [];
+      
+      if (data.length === 0) {
+        canvas.parentElement.innerHTML = '<p>No data available for the selected exercise.</p>';
+        return;
+      }
+      
+      // Sort data by date
+      const sortedData = [...data].sort((a, b) => a.date - b.date);
+      
+      // Prepare chart data
+      const labels = sortedData.map(entry => formatDate(entry.date));
+      const weightData = sortedData.map(entry => entry.weight);
+      const volumeData = sortedData.map(entry => entry.volume);
+      
+      // Create chart
+      window.exerciseChart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Weight (kg)',
+              data: weightData,
+              backgroundColor: 'rgba(64, 223, 100, 0.7)',
+              borderColor: 'rgba(64, 223, 100, 1)',
+              borderWidth: 1,
+              yAxisID: 'y',
+              barPercentage: 0.7
             },
-            plugins: {
-              legend: {
-                position: 'top',
-              },
+            {
+              label: 'Volume (kg)',
+              data: volumeData,
+              type: 'line',
+              borderColor: 'rgba(52, 52, 52, 1)',
+              backgroundColor: 'rgba(52, 52, 52, 0.1)',
+              borderWidth: 2,
+              tension: 0.3,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  if (label) {
+                    label += ': ';
+                  }
+                  if (context.parsed.y !== null) {
+                    label += context.parsed.y.toFixed(1) + ' kg';
+                  }
+                  return label;
+                }
+              }
+            },
+            legend: {
+              position: 'top',
+            }
+          },
+          scales: {
+            x: {
               title: {
                 display: true,
-                text: 'Exercise Metrics'
+                text: 'Date'
+              }
+            },
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              title: {
+                display: true,
+                text: 'Weight (kg)'
+              },
+              grid: {
+                drawOnChartArea: true,
+              }
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              title: {
+                display: true,
+                text: 'Volume (kg)'
+              },
+              grid: {
+                drawOnChartArea: false,
               }
             }
           }
-        });
-      }
+        }
+      });
     }
     
     function updatePersonalBests() {
@@ -1056,6 +1162,12 @@
       
       const exerciseData = {};
       
+      // Make sure workouts is defined and is an array
+      if (!Array.isArray(workouts)) {
+        console.error('Workouts data is not properly initialized');
+        return {};
+      }
+      
       workouts.forEach(workout => {
         // Filter by exercise if specified
         if (specificExercise && workout.exercise !== specificExercise) return;
@@ -1129,6 +1241,9 @@
         }
       };
     }
+      
+      // Make sure exerciseData is initialized
+      const exerciseData = {};
       
       workouts.forEach(workout => {
         if (!exerciseData[workout.exercise]) {
