@@ -11,7 +11,7 @@
   <style>
     body {
       font-family: "Work Sans", Tahoma, Geneva, Verdana, sans-serif;
-      background: #f4f4f4;
+      background: #f8f7ff;
       color: #222;
       margin: 2em;
     }
@@ -427,6 +427,7 @@
   </style>
 </head>
 <body>
+<h2 style="color: #343434; font-size: 1.8em;"><span id="displayName"></span></h2>
   <form id="addExerciseForm" onsubmit="event.preventDefault(); addExercise();">
     <input id="exerciseName" type="text" placeholder="Enter new exercise name" autocomplete="off" />
     <button id="addExerciseBtn" disabled>
@@ -748,9 +749,9 @@
     }
 
     function updateWelcomeMessage(name) {
-      const welcomeElement = document.getElementById('welcomeMessage');
-      if (welcomeElement) {
-        welcomeElement.textContent = `Welcome back, ${name}!`;
+      const displayNameElement = document.getElementById('displayName');
+      if (displayNameElement) {
+        displayNameElement.textContent = name;
       }
     }
 
@@ -1270,6 +1271,26 @@
       outline: none;
       border-color: var(--primary-color);
       box-shadow: 0 0 0 2px rgba(64, 223, 100, 0.2);
+    }
+    .btn-outline:hover {
+      background: rgba(64, 223, 100, 0.1);
+    }
+    
+    .app-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .app-header h1 {
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+    
+    .welcome-message {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin: 0;
+      font-weight: 400;
     }
   </style>
 </body>
