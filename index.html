@@ -145,23 +145,20 @@
     }
     
     .exercise-header {
-      background-color: var(--header-bg);
-      color: var(--header-text);
-      border-radius: 0 0 10px 10px;
       width: 100%;
       padding: 0.5em 1em;
       margin-bottom: 1em;
-      margin-top: 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
       font-size: 1em;
-      font-weight: normal;
       box-sizing: border-box;
     }
     
     .exercise-title {
-      flex-grow: 1;
+      font-weight: 600;
+      font-size: 1.2em;
+      color: var(--text-color);
     }
     
     .exercise-actions {
@@ -890,10 +887,10 @@
                 <th><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> Actions</th>
               </tr>
             </thead>
-            <div class="exercise-header">
-              <div class="exercise-title">${formattedExercise}</div>
-              <button class="delete-exercise-btn" onclick="event.stopPropagation(); showDeleteModal('${exercise}')" title="Delete Exercise">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="exercise-header" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5em 1em;">
+              <div class="exercise-title" style="margin: 0;">${formattedExercise}</div>
+              <button class="delete-exercise-btn" onclick="event.stopPropagation(); showDeleteModal('${exercise}')" title="Delete Exercise" style="margin: 0;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="3 6 5 6 21 6"></polyline>
                   <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                   <line x1="10" y1="11" x2="10" y2="17"></line>
@@ -901,6 +898,7 @@
                 </svg>
               </button>
             </div>
+            
             <tbody>
               <tr>
                 <td data-label="Sets"><input type="number" min="1" id="sets-${exercise}" value="${last.sets}" /></td>
