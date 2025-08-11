@@ -16,11 +16,40 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-color: #f8f7ff;
+      --text-color: #222;
+      --card-bg: #fff;
+      --header-bg: #343434;
+      --header-text: #fff;
+      --button-bg: #343434;
+      --button-hover: #2563eb;
+      --button-text: #fff;
+      --border-color: #e0e0e0;
+      --input-bg: #fff;
+      --input-text: #222;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #1a1a1a;
+      --text-color: #f0f0f0;
+      --card-bg: #2d2d2d;
+      --header-bg: #1e1e1e;
+      --header-text: #ffffff;
+      --button-bg: #3b82f6;
+      --button-hover: #2563eb;
+      --button-text: #fff;
+      --border-color: #444;
+      --input-bg: #3d3d3d;
+      --input-text: #f0f0f0;
+    }
+
     body {
       font-family: "Work Sans", Tahoma, Geneva, Verdana, sans-serif;
-      background: #f8f7ff;
-      color: #222;
+      background: var(--bg-color);
+      color: var(--text-color);
       margin: 2em;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     h1 {
@@ -36,6 +65,8 @@
     }
 
     #exerciseName {
+      background-color: var(--input-bg);
+      color: var(--input-text);
       flex-grow: 1;
       padding: 1em 1.5em;
       font-size: 0.84em;
@@ -57,8 +88,8 @@
       margin-left: 0.5em;
       font-weight: 600;
       font-size: 1em;
-      background-color: #343434;
-      color: white;
+      background-color: var(--button-bg);
+      color: var(--button-text);
       border: none;
       border-radius: 30px;
       cursor: pointer;
@@ -76,14 +107,15 @@
     }
 
     .exercise-section{
-      background-color: white;
+      background-color: var(--card-bg);
       border-radius: 0 0 10px 10px;
       padding-bottom: 12px;
+      border: 1px solid var(--border-color);
     }
     
     .exercise-header {
-      background-color: #343434;
-      color: white;
+      background-color: var(--header-bg);
+      color: var(--header-text);
       border-radius: 0 0 10px 10px;
       width: fit-content;
       padding: 0.5em 1em;
@@ -98,6 +130,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
+      color: var(--text-color);
       border-radius: 30px;
       overflow: hidden;
     }
@@ -110,10 +143,8 @@
       text-align: center;
     }
     tbody tr:nth-child(odd) {
-      background-color: #ffffff;
     }
     tbody tr:hover {
-      
     }
 
     input[type="number"] {
@@ -395,7 +426,6 @@
         margin-bottom: 1.5em;
         border-radius: 30px;
         padding: 1em;
-        background: white;
       }
       tbody tr td {
         padding: 0.5em 1em;
@@ -428,7 +458,22 @@
   </style>
 </head>
 <body>
-<h2 style="color: #343434; font-size: 1.8em;"><span id="displayName"></span></h2>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
+  <h2 style="color: var(--text-color); font-size: 1.8em; margin: 0;"><span id="displayName"></span></h2>
+  <button id="themeToggle" style="background: none; border: none; cursor: pointer; padding: 0.5em; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background-color: var(--button-bg); color: var(--button-text);">
+    <svg id="themeIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </button>
+</div>
   <form id="addExerciseForm" onsubmit="event.preventDefault(); addExercise();">
     <input id="exerciseName" type="text" placeholder="New exercise" autocomplete="off" />
     <button id="addExerciseBtn" disabled>
@@ -745,8 +790,72 @@
       }
     }
 
+    // Theme functions
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      // If no saved theme, use system preference
+      if (!localStorage.getItem('theme') && prefersDark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        updateThemeIcon('dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+      }
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeIcon(newTheme);
+    }
+
+    function updateThemeIcon(theme) {
+      const themeIcon = document.getElementById('themeIcon');
+      if (!themeIcon) return;
+      
+      if (theme === 'dark') {
+        themeIcon.innerHTML = `
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        `;
+      } else {
+        themeIcon.innerHTML = `
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        `;
+      }
+    }
+
     // Initialize the app
     document.addEventListener('DOMContentLoaded', function() {
+      initTheme();
+      
+      // Add event listener for theme toggle
+      const themeToggle = document.getElementById('themeToggle');
+      if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+      }
+      
+      // Listen for system theme changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (!localStorage.getItem('theme')) {  // Only if user hasn't set a preference
+          const newTheme = e.matches ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', newTheme);
+          updateThemeIcon(newTheme);
+        }
+      });
+      
       checkDisplayName();
       renderTable();
       setupNavigation();
