@@ -78,6 +78,37 @@
       outline: none;
       border-color: #343434;
     }
+    
+    .exercise-input-container {
+      position: relative;
+      flex-grow: 1;
+    }
+    
+    .suggestions-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-height: 200px;
+      overflow-y: auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      margin-top: 4px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+    
+    .suggestion-item {
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .suggestion-item:hover {
+      background-color: var(--header-bg);
+      color: var(--header-text);
+    }
 
     #addExerciseBtn {
       display: flex;
@@ -484,7 +515,10 @@
   </button>
 </div>
   <form id="addExerciseForm" onsubmit="event.preventDefault(); addExercise();">
-    <input id="exerciseName" type="text" placeholder="New exercise" autocomplete="off" />
+    <div class="exercise-input-container" style="position: relative;">
+      <input id="exerciseName" type="text" placeholder="New exercise" autocomplete="off" />
+      <div id="exerciseSuggestions" class="suggestions-dropdown" style="display: none;"></div>
+    </div>
     <button id="addExerciseBtn" disabled>
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -582,8 +616,84 @@
     const addExerciseBtn = document.getElementById('addExerciseBtn');
     let progressChart = null;
 
+    // Common exercises for suggestions
+    const commonExercises = [
+      'Bench Press', 'Squat', 'Deadlift', 'Overhead Press', 'Barbell Row',
+      'Pull Up', 'Push Up', 'Dumbbell Curl', 'Tricep Extension', 'Lat Pulldown',
+      'Leg Press', 'Lunges', 'Dips', 'Chest Fly', 'Shoulder Press',
+      'Bent Over Row', 'Cable Crossover', 'Leg Curl', 'Leg Extension', 'Calf Raise'
+    ];
+
+    function showSuggestions(input) {
+      const suggestionsContainer = document.getElementById('exerciseSuggestions');
+      const inputValue = input.value.trim().toLowerCase();
+      
+      if (!inputValue) {
+        suggestionsContainer.style.display = 'none';
+        return;
+      }
+      
+      const filtered = commonExercises.filter(ex => 
+        ex.toLowerCase().includes(inputValue)
+      );
+      
+      if (filtered.length === 0) {
+        suggestionsContainer.style.display = 'none';
+        return;
+      }
+      
+      suggestionsContainer.innerHTML = filtered.map(ex => 
+        `<div class="suggestion-item" onclick="selectSuggestion('${ex}')">${ex}</div>`
+      ).join('');
+      
+      suggestionsContainer.style.display = 'block';
+    }
+    
+    function selectSuggestion(exercise) {
+      const input = document.getElementById('exerciseName');
+      input.value = exercise;
+      document.getElementById('exerciseSuggestions').style.display = 'none';
+      input.focus();
+      addExerciseBtn.disabled = false;
+    }
+    
+    // Close suggestions when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.exercise-input-container')) {
+        document.getElementById('exerciseSuggestions').style.display = 'none';
+      }
+    });
+    
     exerciseInput.addEventListener('input', () => {
-      addExerciseBtn.disabled = exerciseInput.value.trim() === '';
+      const value = exerciseInput.value.trim();
+      addExerciseBtn.disabled = value === '';
+      showSuggestions(exerciseInput);
+    });
+    
+    // Add keyboard navigation for suggestions
+    exerciseInput.addEventListener('keydown', (e) => {
+      const suggestions = document.querySelectorAll('.suggestion-item');
+      if (!suggestions.length) return;
+      
+      const current = document.querySelector('.suggestion-item.highlighted');
+      let index = Array.from(suggestions).indexOf(current);
+      
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (current) current.classList.remove('highlighted');
+        index = (index + 1) % suggestions.length;
+        suggestions[index].classList.add('highlighted');
+        suggestions[index].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (current) current.classList.remove('highlighted');
+        index = (index - 1 + suggestions.length) % suggestions.length;
+        suggestions[index].classList.add('highlighted');
+        suggestions[index].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter' && current) {
+        e.preventDefault();
+        current.click();
+      }
     });
 
     function saveWorkouts() {
